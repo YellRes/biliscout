@@ -1,0 +1,6 @@
+CREATE TABLE research_task (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    question VARCHAR(500) NOT NULL,
+    status VARCHAR(32) NOT NULL,
+    created_at DATETIME NOT NULL
+);
