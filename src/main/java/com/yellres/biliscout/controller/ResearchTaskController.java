@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.yellres.biliscout.dto.CreateResearchTaskRequest;
-import com.yellres.biliscout.entity.ResearchTaskInsert;
 import com.yellres.biliscout.entity.TaskStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -36,7 +35,7 @@ public class ResearchTaskController {
     public ResponseEntity<ResearchTask> create(
         @RequestBody CreateResearchTaskRequest request
     ) {
-        ResearchTaskInsert task = new ResearchTaskInsert();
+        ResearchTask task = new ResearchTask();
         task.setQuestion(request.question());
         task.setStatus(TaskStatus.QUEUED);
         task.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
