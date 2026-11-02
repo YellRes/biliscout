@@ -12,38 +12,35 @@ import com.yellres.biliscout.entity.TaskStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.net.URI;
+import com.yellres.biliscout.service.ResearchTaskService;
+import com.yellres.biliscout.common.Result;
+import jakarta.validation.Valid;
 
 @RestController
 public class ResearchTaskController {
-    private final ResearchTaskMapper researchTaskMapper;
+    // private final ResearchTaskMapper researchTaskMapper;
+    private final ResearchTaskService researchTaskService;
 
-    public ResearchTaskController(ResearchTaskMapper researchTaskMapper) {
-        this.researchTaskMapper = researchTaskMapper;
+
+    public ResearchTaskController(ResearchTaskService researchTaskService) {
+        this.researchTaskService = researchTaskService;
     }
 
     @GetMapping("/api/tasks/{id}")
-    public ResponseEntity<ResearchTask> getById(@PathVariable("id") Long id) {
-        ResearchTask researchTask = researchTaskMapper.selectById(id);
-        if (researchTask == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(researchTask);
+    public ResponseEntity<Result<ResearchTask>> getById(@PathVariable("id") Long id) {
+        ResearchTask researchTask = researchTaskService.getById(id);
+        return ResponseEntity.ok(new Result<>(0, "success", researchTask));
     }
 
     @PostMapping("/api/tasks")
-    public ResponseEntity<ResearchTask> create(
-        @RequestBody CreateResearchTaskRequest request
+    public ResponseEntity<Result<ResearchTask>> create(
+        @Valid @RequestBody CreateResearchTaskRequest request
     ) {
-        ResearchTask task = new ResearchTask();
-        task.setQuestion(request.question());
-        task.setStatus(TaskStatus.QUEUED);
-        task.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
+        ResearchTask saved = researchTaskService.create(request.question());
 
-        researchTaskMapper.insert(task);
-        ResearchTask saved = researchTaskMapper.selectById(task.getId());
-
-        return ResponseEntity.created(URI.create("/api/tasks/" + task.getId())).body(saved);
+        return ResponseEntity.created(URI.create("/api/tasks/" + saved.getId())).body(
+            new Result<>(0, "success", saved)
+        );
     }
 
 }

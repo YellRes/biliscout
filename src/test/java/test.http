@@ -2,5 +2,10 @@ POST http://localhost:8080/api/tasks
 Content-Type: application/json
 
 {
-  "question": "帮我推荐一款枕头"
+  "question": "   "
 }
+
+
+###
+
+GET http://localhost:8080/api/tasks/999
