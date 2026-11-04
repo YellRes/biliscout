@@ -23,4 +23,13 @@ class WbiSignerTest {
                         "4932caff0ff746eab6f01bf08b70ac45").get("w_rid"));
     }
 
+    @Test
+    void testWbiSigner3() {
+        assertEquals(
+                "d08710b12ba6336139846c9b8d49bff1",
+                WbiSigner.sign(Map.of("keyword", "侧睡 枕头(推荐)!", "page", "1"), 1702204169L,
+                        "7cd084941338484aae1ad9425b84077c",
+                        "4932caff0ff746eab6f01bf08b70ac45").get("w_rid"));
+    }
+
 }
