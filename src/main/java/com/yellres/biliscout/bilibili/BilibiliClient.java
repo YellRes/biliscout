@@ -8,7 +8,9 @@ public class BilibiliClient {
     private final RestClient restClient;
 
     public BilibiliClient(RestClient.Builder builder) {
-        this.restClient = builder.baseUrl("https://api.bilibili.com").build();
+        this.restClient = builder.baseUrl("https://api.bilibili.com")
+        .requestInterceptor(new RateLimitInterceptor())
+        .build();
     }
 
     public JsonNode fetchNav() {
