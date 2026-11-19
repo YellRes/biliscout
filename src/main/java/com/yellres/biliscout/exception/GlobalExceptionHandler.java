@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,24 @@ public class GlobalExceptionHandler {
         log.error("未处理的异常", ex);
         return ResponseEntity.status(500).body(
             new Result<>(50001, "服务器内部错误，请稍后重试", null)
+        );
+    }
+
+    @ExceptionHandler(BilibiliApiException.class)
+    public ResponseEntity<Result<Void>> bilibiliInnerError(BilibiliApiException ex) {
+        log.warn("b站服务暂时不可用: {}", ex.getMessage());
+        return ResponseEntity.status(502).body(
+            new Result<>(50201, "b站服务暂时不可用", null)
+        );
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<Result<Void>> handlerMethodValidationException(
+        HandlerMethodValidationException ex
+    ) {
+        log.debug("传参错误", ex);
+        return ResponseEntity.status(400).body(
+            new Result<>(40004, "请求参数不合法", null)
         );
     }
 
