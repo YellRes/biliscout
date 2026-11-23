@@ -2,6 +2,7 @@ package com.yellres.biliscout.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -34,4 +35,10 @@ public interface SubtitleMapper {
             </script>
             """)
     int upsertBatch(@Param("videoId") long videoId, @Param("cues") List<SubtitleCue> cues);
+
+    @Delete("""
+                DELETE FROM video_subtitle
+                WHERE video_id = #{videoId}
+            """)
+    int deleteByVideoId(long videoId);
 }

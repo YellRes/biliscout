@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.yellres.biliscout.bilibili.BilibiliClient;
 import com.yellres.biliscout.bilibili.SubtitleCue;
@@ -57,12 +58,14 @@ public class VideoService {
 
     }
 
+    @Transactional
     public void saveSubtitles(String bvid, List<SubtitleCue> cues) {
         Video video = videoMapper.selectByBvid(bvid);
         if (video == null) {
             throw new IllegalArgumentException("找不到视频，bvid=" + bvid);
         }
 
+        subtitleMapper.deleteByVideoId(video.getId());
         if (cues.isEmpty())
             return;
         subtitleMapper.upsertBatch(video.getId(), cues);
