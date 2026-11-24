@@ -1,4 +1,5 @@
 package com.yellres.biliscout.bilibili;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
@@ -11,14 +12,13 @@ public class BilibiliClient {
 
     public BilibiliClient(
             RestClient.Builder builder,
-                    @Value("${bilibili.sessdata}") String sessdata
-    ) {
+            @Value("${bilibili.sessdata}") String sessdata) {
         if (!sessdata.isBlank()) {
             builder.defaultHeader("Cookie", "SESSDATA=" + sessdata);
         }
         this.restClient = builder.baseUrl("https://api.bilibili.com")
-        .requestInterceptor(new RateLimitInterceptor())
-        .build();
+                .requestInterceptor(new RateLimitInterceptor())
+                .build();
     }
 
     public JsonNode fetchNav() {
@@ -47,14 +47,18 @@ public class BilibiliClient {
     }
 
     public JsonNode search(String keyword) {
-        Map<String, String> signedParams = signParams(Map.of("keyword", keyword, "search_type", "video", "page", "1"));
 
-        return restClient.get().uri(
-    "/x/web-interface/wbi/search/type"
-        + "?keyword={keyword}&search_type={search_type}&page={page}"
-        + "&wts={wts}&w_rid={w_rid}",
-    signedParams
-        ).header("Referer", "https://search.bilibili.com/").retrieve().body(JsonNode.class);
+        return Retry.retry(() -> {
+            Map<String, String> signedParams = signParams(
+                    Map.of("keyword", keyword, "search_type", "video", "page", "1"));
+
+            return restClient.get().uri(
+                    "/x/web-interface/wbi/search/type"
+                            + "?keyword={keyword}&search_type={search_type}&page={page}"
+                            + "&wts={wts}&w_rid={w_rid}",
+                    signedParams).header("Referer", "https://search.bilibili.com/").retrieve().body(JsonNode.class);
+        }, 3);
+
     }
 
 }
