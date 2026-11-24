@@ -61,4 +61,11 @@ public class BilibiliClient {
 
     }
 
+    public JsonNode fetchVideoDetail(String bvid) {
+        return restClient.get()
+                .uri("/x/web-interface/view?bvid={bvid}", bvid)
+                .retrieve()
+                .body(JsonNode.class);
+    }
+
 }
