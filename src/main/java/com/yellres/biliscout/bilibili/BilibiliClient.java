@@ -68,4 +68,18 @@ public class BilibiliClient {
                 .body(JsonNode.class), 3);
     }
 
+    public JsonNode fetchVideoComment(long aid) {
+        return Retry.retry(() -> {
+            Map<String, String> signedParams = signParams(
+                    Map.of("type", String.valueOf(1), "oid", String.valueOf(aid),
+                            "mode", String.valueOf(3)));
+
+            return restClient.get().uri(
+                    "/x/v2/reply/wbi/main"
+                            + "?type={type}&oid={oid}&mode={mode}"
+                            + "&wts={wts}&w_rid={w_rid}",
+                    signedParams).header("Referer", "https://bilibili.com/").retrieve().body(JsonNode.class);
+        }, 3);
+    }
+
 }
